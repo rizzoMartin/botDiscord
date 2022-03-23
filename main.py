@@ -4,25 +4,6 @@ import logging
 from dotenv import load_dotenv
 from discord.ext import commands
 
-class MyClient(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-
-    # Connection
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print('Logged on as {0}! (id: {1})'.format(self.bot.user, self.bot.user.id))
-
-    # Reconnect
-    @commands.Cog.listener()
-    async def on_resumed(self):
-        print('Bot has reconnected!')
-
-    # handle errors
-    @commands.Cog.listener()
-    async def on_command_errror(self, ctx, error):
-        await ctx.send(error)
-
 # Gateway intents
 intents = discord.Intents.default()
 intents.members = True
@@ -53,5 +34,4 @@ if __name__ == '__main__':
             except:
                 print(f'an error ocurred loading the extension {cog}')
 
-    bot.add_cog(MyClient(bot))
     bot.run(token, reconnect=True)
