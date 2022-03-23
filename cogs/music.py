@@ -63,10 +63,10 @@ class Music(commands.Cog):
         else:
             self.is_playing = False
 
-    @commands.command(name="play", help="Plays a selected song from youtube")
+    @commands.command(name="play", help="Añade a la cola una cancion o la reproduce si no hay ninguna en la cola")
     async def p(self, ctx, *args):
         query = " ".join(args)
-        
+
         try:
             voice_channel = ctx.author.voice.channel
         except:
@@ -83,7 +83,7 @@ class Music(commands.Cog):
             if self.is_playing == False:
                 await self.play_music()
 
-    @commands.command(name="queue", help="Displays the current songs in queue")
+    @commands.command(name="queue", help="Muestra un mensaje con la cola de canciones")
     async def q(self, ctx):
         retval = ""
         for i in range(0, len(self.music_queue)):
@@ -95,14 +95,14 @@ class Music(commands.Cog):
         else:
             await ctx.send("No music in queue")
 
-    @commands.command(name="skip", help="Skips the current song being played")
+    @commands.command(name="skip", help="Salta a la siguiente canción de la cola")
     async def skip(self, ctx):
         if self.vc != "" and self.vc:
             self.vc.stop()
             #try to play next in the queue if it exists
             await self.play_music()
             
-    @commands.command(name="disconnect", help="Disconnecting bot from VC")
+    @commands.command(name="disc", help="Desconecta el bot del canal de voz")
     async def dc(self, ctx):
         await self.vc.disconnect()
 
