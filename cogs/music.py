@@ -43,25 +43,22 @@ class Music(commands.Cog):
 
     # infinite loop checking 
     async def play_music(self):
-        if len(self.music_queue) > 0:
-            self.is_playing = True
+        self.is_playing = True
 
-            m_url = self.music_queue[0][0]['source']
-            
-            #try to connect to voice channel if you are not already connected
+        m_url = self.music_queue[0][0]['source']
+        
+        #try to connect to voice channel if you are not already connected
 
-            if self.vc == "" or not self.vc.is_connected() or self.vc == None:
-                self.vc = await self.music_queue[0][1].connect()
-            else:
-                await self.vc.move_to(self.music_queue[0][1])
-            
-            print(self.music_queue)
-            #remove the first element as you are currently playing it
-            self.music_queue.pop(0)
-
-            self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
+        if self.vc == "" or not self.vc.is_connected() or self.vc == None:
+            self.vc = await self.music_queue[0][1].connect()
         else:
-            self.is_playing = False
+            await self.vc.move_to(self.music_queue[0][1])
+        
+        print(self.music_queue)
+        #remove the first element as you are currently playing it
+        self.music_queue.pop(0)
+
+        self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
 
     @commands.command(name="play", help="Añade a la cola una cancion o la reproduce si no hay ninguna en la cola")
     async def p(self, ctx, *args):
@@ -75,10 +72,11 @@ class Music(commands.Cog):
 
         song = self.search_yt(query)
         if type(song) == type(True):
-            await ctx.send("Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format.")
+            await ctx.send("No se ha podido encontrar la cancion")
         else:
-            await ctx.send("Song added to the queue")
             self.music_queue.append([song, voice_channel])
+            _song = self.music_queue[len(self.music_queue) - 1][0]['title']
+            await ctx.send(f'{_song} añadida a la cola')
             
             if self.is_playing == False:
                 await self.play_music()
@@ -87,23 +85,25 @@ class Music(commands.Cog):
     async def q(self, ctx):
         retval = ""
         for i in range(0, len(self.music_queue)):
-            retval += self.music_queue[i][0]['title'] + "\n"
+            retval += str(i + 1) + ". " + self.music_queue[i][0]['title'] + "\n"
 
-        print(retval)
         if retval != "":
             await ctx.send(retval)
         else:
-            await ctx.send("No music in queue")
+            await ctx.send("No hay musica en la cola")
 
     @commands.command(name="skip", help="Salta a la siguiente canción de la cola")
     async def skip(self, ctx):
         if self.vc != "" and self.vc:
             self.vc.stop()
-            #try to play next in the queue if it exists
-            await self.play_music()
+            try:
+                await self.play_music()
+            except:
+                return
             
     @commands.command(name="disc", help="Desconecta el bot del canal de voz")
     async def dc(self, ctx):
+        self.is_playing = False
         await self.vc.disconnect()
 
 def setup(bot):

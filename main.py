@@ -9,7 +9,7 @@ intents = discord.Intents.default()
 intents.members = True
 intents.presences = True
 
-descripction='Bot de musica sencillo'
+description='Bot de musica sencillo'
 
 # bot prefix
 bot = commands.Bot(command_prefix = commands.when_mentioned_or('!'),
