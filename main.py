@@ -31,7 +31,7 @@ if __name__ == '__main__':
         if cog.endswith('.py'):
             try:
                 bot.load_extension(f'cogs.{cog[: -3]}')
-            except:
-                print(f'an error ocurred loading the extension {cog}')
+            except Exception as e:
+                print(f'an error ocurred loading the extension {cog}: {e}')
 
     bot.run(token, reconnect=True)
